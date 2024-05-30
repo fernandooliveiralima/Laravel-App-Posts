@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegisterUserController;
 use App\Http\Controllers\LoginUserController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::view('/', 'welcome');
 
@@ -28,3 +28,6 @@ Route::middleware('guest')->group(function(){
     Route::get('/login', [LoginUserController::class, 'userLogin'])->name('login');
     Route::post('/login', [LoginUserController::class, 'store'])->name('login.store');
 });
+
+Route::get('/admin', 
+[DashboardController::class, 'index'])->name('admin.dashboard')->middleware(['canViewPost']);

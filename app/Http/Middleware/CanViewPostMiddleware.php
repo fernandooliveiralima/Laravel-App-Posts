@@ -18,6 +18,7 @@ class CanViewPostMiddleware
         if(auth()->check()){
             return $next($request);
         }
+        
         return redirect()->route('login');
     }
 }

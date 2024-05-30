@@ -3,18 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\Post;
 
+
 class PostController extends Controller
 {
+
+    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        
         $allPosts = Post::all();
-
+        
         return view('posts.index', ['allPosts' => $allPosts]);
     }
 
@@ -35,28 +41,23 @@ class PostController extends Controller
     public function store(Request $request)
     {
         
-        /* Post::create([
-            'title' => $request->title,
-            'content' => $request->content
-        ]);
-
-        $allPosts = Post::all();
-        return view('posts.index', ['allPosts' => $allPosts]); */
         $validated = $request->validate([
             'title' => ['required', 'min:5', 'max:255'],
             'content' => ['required', 'min:10']
         ]);
+        
+        $validated['user_id'] = auth()->id();
 
-        auth()->user()->posts()->create($validated);
+        Post::create($validated);
         return redirect()->route('posts.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Post $post)
     {
-        $post = Post::findOrFail($id);
+        //$post = Post::findOrFail($post->id);
         return view('posts.show', ['post' => $post]);
     }
 
@@ -65,10 +66,11 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        if($post->user_id !== auth()->id()){
-            abort(403);
-        };
-
+        /* if (auth()->id !== $post->user_id) {
+            abort(404);
+        } */
+        
+        Gate::authorize('update', $post);
         return view('posts.edit', ['post' => $post]);
     }
 
@@ -77,6 +79,10 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        Gate::authorize('update', $post);
+        /* if (auth()->id !== $post->user_id) {
+            abort(404);
+        } */
         $validateData = $request->validate([
             'title' => ['required', 'min:5', 'max:255'],
             'content' => ['required', 'min:10']
@@ -91,7 +97,12 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        /* if (auth()->id !== $post->user_id) {
+            abort(404);
+        } */
+        Gate::authorize('delete', $post);
+        
         $post->delete();
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')->with('error', 'Post Deleted!');
     }
 }

@@ -13,8 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias(['can-view-post' => CanViewPostMiddleware::class]);
-        //$middleware->web(App\Http\Middleware\CanViewPostMiddleware::class);
+        $middleware->alias(['canViewPost' => CanViewPostMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

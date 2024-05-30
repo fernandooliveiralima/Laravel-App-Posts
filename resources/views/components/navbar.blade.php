@@ -23,7 +23,10 @@
           @endguest
           
           @auth
-            {{-- <x-navbar-link href="{{ route('register') }}" :active="request()->is('register')">Logout</x-navbar-link> --}}
+            <span class="text-blue-600 dark:text-blue-400 font-semibold">
+              {{ Auth::user()->name }}
+            </span>
+
             <form action="{{ route('logout') }}" method="POST">
               @csrf
               <x-navbar-link href="{{ route('register') }}" :active="false" 
@@ -31,6 +34,17 @@
                 Logout
               </x-navbar-link>
             </form>
+
+          @endauth
+
+          @auth
+            @if (Auth::user()->is_admin)
+            <x-navbar-link 
+              href="{{ route('admin.dashboard') }}" 
+              :active="request()->is('is_admin')">
+              Admin Dashboard
+            </x-navbar-link>
+            @endif
           @endauth
           
         </ul>
